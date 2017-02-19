@@ -1,0 +1,12 @@
+extends: 'eslint:recommended'
+parserOptions:
+  ecmaVersion: 6
+  sourceType: script
+  ecmaFeatures:
+    - impliedStrict
+env:
+  browser: true
+rules:
+  indent: [error, tab]
+  comma-dangle: [error, always-multiline]
+  semi: [error, always]

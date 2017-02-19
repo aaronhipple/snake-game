@@ -1,0 +1,16 @@
+{
+  "name": "snake-game",
+  "version": "0.1.0",
+  "description": "A snake game clone.",
+  "main": "js/main.js",
+  "repository": "git@github.com:aaronhipple/snake-game.git",
+  "author": "Aaron Hipple <ahipple@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint js",
+    "lint:fix": "eslint --fix js"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0"
+  }
+}
