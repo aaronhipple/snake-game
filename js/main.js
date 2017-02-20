@@ -45,7 +45,7 @@ class Snake extends GridChild {
 		this.direction = 'up';
 		this.tail = [];
 		this.initializeTail();
-		this.registerKeyListeners();		
+		this.registerKeyListeners();
 	}
 
 	initializeTail() {
@@ -156,9 +156,9 @@ class Grid {
 	}
 
 	tick() {
-		this.renderer.draw(this);
 		this.maybeAddFood();
 		this.children.forEach(child => child.update());
+		this.renderer.draw(this);
 	}
 
 	maybeAddFood() {
