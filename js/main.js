@@ -23,7 +23,7 @@ class Cell {
 	}
 
 	setChild(child) {
-		if (!(child instanceof GridChild)) {
+		if (child !== null && !(child instanceof GridChild)) {
 			throw new Error('child must be instance of GridChild');
 		}
 		this.child = child;
