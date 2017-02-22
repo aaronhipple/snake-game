@@ -14,13 +14,7 @@ const options = {
 class Cell {
 	constructor(x, y) {
 		Object.assign(this, { x, y });
-	}
-}
-
-class GridChild {
-	constructor(x, y) {
-		Object.assign(this, { x, y });
-		this.id = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+		this.child = null;
 	}
 
 	attachTo(grid) {
@@ -28,19 +22,67 @@ class GridChild {
 		return this;
 	}
 
+	setChild(child) {
+		if (!(child instanceof GridChild)) {
+			throw new Error('child must be instance of GridChild');
+		}
+		this.child = child;
+		return this;
+	}
+
+	getChild() {
+		return this.child;
+	}
+
+	hasChild() {
+		return (this.child instanceof GridChild);
+	}
+
+	getNeighbor(direction) {
+		switch (direction) {
+		case 'up': return this.grid.getCell(this.x, this.y - 1);
+		case 'down': return this.grid.getCell(this.x, this.y + 1);
+		case 'right': return this.grid.getCell(this.x + 1, this.y);
+		case 'left': return this.grid.getCell(this.x - 1, this.y);
+		}
+	}
+}
+
+class GridChild {
+	constructor(cell) {
+		Object.assign(this, { cell });
+		this.attach(cell);
+	}
+
+	attach(cell) {
+		this.detach();
+		this.cell = cell;
+		cell.setChild(this);
+		return this;
+	}
+
+	attachGrid(grid) {
+		this.grid = grid;
+		return this;
+	}
+
 	update() {}
 
+	detach() {
+		if (this.cell) this.cell.setChild(null);
+		this.cell = null;
+		return this;
+	}
+
 	destroy() {
-		const childIndex = this.grid.children
-			.findIndex(child => child.id === this.id);
-		this.grid.children.splice(childIndex, 1);
+		this.detach();
 		delete(this);
 	}
 }
 
 class Snake extends GridChild {
-	constructor(x, y) {
-		super(x, y);
+	constructor(cell) {
+		super(cell);
 		this.size = options.startingLength;
 		this.direction = 'up';
 		this.tail = [];
@@ -49,11 +91,11 @@ class Snake extends GridChild {
 	}
 
 	initializeTail() {
+		let cell = this.cell;
+		// eslint-disable-next-line no-unused-vars
 		for (const i of Array(this.size - 1).keys()) {
-			this.tail.push({
-				x: this.x,
-				y: this.y + (i + 1),
-			});
+			cell = cell.getNeighbor('down');
+			this.tail.push(new SnakeTail(cell, this).attachGrid(cell.grid));
 		}
 	}
 
@@ -69,64 +111,53 @@ class Snake extends GridChild {
 	}
 
 	update() {
-		this.updateTail();
-		this.updateHeadPosition();
-		this.checkCollisions();
+		const newCell = this.cell.getNeighbor(this.direction);
+		this.checkCollisions(newCell);
+		if (newCell === null) return;
+		const oldCell = this.cell;
+		this.detach().attach(newCell);
+		this.updateTail(oldCell);
 	}
 
-	checkCollisions() {
-		this.checkGrid();
-		this.checkFoods();
+	checkCollisions(newCell) {
+		this.checkGrid(newCell);
+		this.checkFoods(newCell);
+		this.checkSnakes(newCell);
 	}
 
-	checkGrid() {
-		if (this.x < 0 ||
-			this.y < 0 ||
-			this.x >= this.grid.width ||
-			this.y >= this.grid.height) {
+	checkGrid(cell) {
+		if (cell === null) {
 			this.grid.stop();
 		}
 	}
 
-	checkFoods() {
-		this.grid.children
-			.filter((child) => {
-				return child instanceof Food && child.x === this.x && child.y === this.y;
-			})
-			.map((food) => {
-				food.destroy();
-				this.size++;
-			});
-	}
-
-	updateHeadPosition() {
-		switch (this.direction) {
-		case 'up':
-			this.y--;
-			break;
-		case 'down':
-			this.y++;
-			break;
-		case 'right':
-			this.x++;
-			break;
-		case 'left':
-			this.x--;
-			break;
-		default:
-			throw new Error('Invalid direction for Snake update');
+	checkFoods(cell) {
+		if (cell === null) return;
+		if (cell.child instanceof Food) {
+			cell.child.destroy();
+			this.size++;
 		}
 	}
 
-	updateTail() {
-		this.tail.unshift({ x: this.x, y: this.y });
-		this.tail = this.tail.slice(0, this.size - 1);
+	checkSnakes(cell) {
+		if (!cell.hasChild()) return;
+		if (cell.getChild() instanceof Snake ||
+			cell.getChild() instanceof SnakeTail) {
+			this.grid.stop();
+		}
+	}
+
+	updateTail(cell) {
+		this.tail.unshift(new SnakeTail(cell, this).attachGrid(this.grid));
+		if (this.tail.length >= this.size) {
+			this.tail.pop().destroy();
+		}
 	}
 }
 
 class Food extends GridChild {
-	constructor(x, y) {
-		super(x, y);
+	constructor(cell) {
+		super(cell);
 		this.age = 0;
 	}
 
@@ -138,12 +169,30 @@ class Food extends GridChild {
 	}
 }
 
+class SnakeTail extends GridChild {
+	constructor(cell, head) {
+		super(cell);
+		Object.assign(this, { head });
+	}
+}
+
 class Grid {
 	constructor(width, height, renderer) {
 		Object.assign(this, { width, height, renderer });
-		this.cells = Array(width).fill(Array(height).fill(null).map(() => new Cell()));
-		this.children = [];
-		this.addChild(new Snake(Math.floor(width / 2), Math.floor(height / 2)));
+		this.initializeGrid(width, height);
+		this.snake = new Snake(
+			this.getCell(Math.round(width / 2), Math.round(height / 2))
+		).attachGrid(this);
+	}
+
+	initializeGrid(width, height) {
+		this.cells = [];
+		for (const x of Array(width).keys()) {
+			this.cells.push([]);
+			for (const y of Array(height).keys()) {
+				this.cells[x].push(new Cell(x, y).attachTo(this));
+			}
+		}
 	}
 
 	start() {
@@ -153,11 +202,12 @@ class Grid {
 
 	stop() {
 		clearInterval(this.ticker);
+		alert(`You lose. Your snake was ${this.snake.size} big.`);
 	}
 
 	tick() {
 		this.maybeAddFood();
-		this.children.forEach(child => child.update());
+		this.getChildren().forEach(child => child.update());
 		this.renderer.draw(this);
 	}
 
@@ -167,17 +217,38 @@ class Grid {
 		}
 	}
 
-	addFood() {
+	getRandomCell() {
 		const coords = {
 			x: Math.floor(Math.random() * (this.width)),
 			y: Math.floor(Math.random() * (this.height)),
 		};
-
-		this.addChild(new Food(coords.x, coords.y));
+		return this.getCell(coords.x, coords.y);
 	}
 
-	addChild(child) {
-		this.children.push(child.attachTo(this));
+	addFood() {
+		let cell = this.getRandomCell();
+		while (cell.hasChild()) cell = this.getRandomCell();
+		return new Food(cell).attachGrid(this);
+	}
+
+	getCell(x, y) {
+		if (x < 0 ||
+			y < 0 ||
+			x >= this.width ||
+			y >= this.height) {
+			return null;
+		}
+		return this.cells[x][y];
+	}
+
+	getChildren() {
+		const children = [];
+		this.cells.forEach(row => {
+			row.forEach(cell => {
+				if (cell.hasChild()) children.push(cell.getChild());
+			});
+		});
+		return children;
 	}
 }
 

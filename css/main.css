@@ -31,6 +31,7 @@ a {
 	background: #c55;
 }
 
-#snake-game .row .cell.snake {
+#snake-game .row .cell.snake,
+#snake-game .row .cell.snaketail {
 	background: #5c5;
 }
