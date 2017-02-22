@@ -1,5 +1,3 @@
-/* global Food, Snake */
-
 class HTMLRenderer { // eslint-disable-line no-unused-vars
 	constructor(element) {
 		if (element instanceof Element) {
@@ -45,33 +43,22 @@ class HTMLRenderer { // eslint-disable-line no-unused-vars
 		}
 
 		this.cleanMarkings();
-		this.drawFoods(grid);
-		this.drawSnakes(grid);
+		this.drawChildren(grid);
 	}
 
 	cleanMarkings() {
-		['food', 'snake'].forEach((marking) => {
+		['food', 'snake', 'snaketail'].forEach((marking) => {
 			const els = this.element.querySelectorAll(`.${marking}`);
 			if (els.length === 0) return;
 			els.forEach(el => el.classList.remove(marking));
 		});
 	}
 
-	drawFoods(grid) {
-		const markFood = this.markCell('food');
-		grid.children
-			.filter(child => child instanceof Food)
-			.forEach(({ x, y }) => markFood(x)(y));
-	}
-
-	drawSnakes(grid) {
-		const markSnake = this.markCell('snake');
-		grid.children
-			.filter(child => child instanceof Snake)
-			.forEach(({ x, y, tail }) => {
-				markSnake(x)(y);
-				tail.forEach(({ x, y }) => markSnake(x)(y));
-			});
+	drawChildren(grid) {
+		const children = grid.getChildren();
+		children.forEach((child) => {
+			this.markCell(child.constructor.name)(child.cell.x)(child.cell.y);
+		});
 	}
 
 	markCell(marking) {
@@ -79,7 +66,7 @@ class HTMLRenderer { // eslint-disable-line no-unused-vars
 			const cell = this.element
 				.querySelectorAll('.row').item(y)
 				.querySelectorAll('.cell').item(x);
-			cell.classList.add(marking);
+			cell.classList.add(marking.toLowerCase());
 		};
 	}
 }
