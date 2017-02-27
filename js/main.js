@@ -12,4 +12,11 @@ const options = {
 };
 
 const game = new Grid(options.gridSize.width, options.gridSize.height, new HTMLRenderer('#snake-game'));
-game.start();
+
+var startButton = document.getElementById('start');
+var resetButton = document.getElementById('reset');
+// game.start();
+
+startButton.addEventListener('click', function () {
+	game.start();
+});

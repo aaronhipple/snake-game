@@ -11,6 +11,19 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
+body.flash {
+	background-color: blue;
+}
+
+button {
+	color:white;
+	font-family: cursive;
+	background:black;
+	border:0px;
+	width:10em;
+	height:10em;
+}
+
 a {
 	color: #345;
 }

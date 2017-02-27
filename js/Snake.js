@@ -56,7 +56,16 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 		if (cell.child instanceof Food) {
 			cell.child.destroy();
 			this.size++;
+
+			var body = document.querySelector('body');
+
+			body.classList.add('flash');
+			setTimeout(function () {
+				body.classList.remove('flash');
+			},250);
+
 		}
+
 	}
 
 	checkSnakes(cell) {
