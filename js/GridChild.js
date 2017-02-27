@@ -1,4 +1,4 @@
-class GridChild {
+class GridChild { // eslint-disable-line no-unused-vars
 	constructor(cell) {
 		Object.assign(this, { cell });
 		this.attach(cell);

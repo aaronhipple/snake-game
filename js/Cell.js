@@ -1,4 +1,6 @@
-class Cell {
+/* global GridChild */
+
+class Cell { // eslint-disable-line no-unused-vars
 	constructor(x, y) {
 		Object.assign(this, { x, y });
 		this.child = null;

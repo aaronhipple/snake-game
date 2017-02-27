@@ -1,4 +1,7 @@
-class Grid {
+/* global Snake, Cell, options, Food */
+
+
+class Grid { // eslint-disable-line no-unused-vars
 	constructor(width, height, renderer) {
 		Object.assign(this, { width, height, renderer });
 		this.initializeGrid(width, height);

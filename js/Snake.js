@@ -1,4 +1,6 @@
-class Snake extends GridChild {
+/* global GridChild, SnakeTail, options, Food */
+
+class Snake extends GridChild { // eslint-disable-line no-unused-vars
 	constructor(cell) {
 		super(cell);
 		this.size = options.startingLength;
