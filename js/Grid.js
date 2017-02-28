@@ -4,30 +4,39 @@
 class Grid { // eslint-disable-line no-unused-vars
 	constructor(width, height, renderer) {
 		Object.assign(this, { width, height, renderer });
-		this.initializeGrid(width, height);
-		this.snake = new Snake(
-			this.getCell(Math.round(width / 2), Math.round(height / 2))
-		).attachGrid(this);
+		this.initializeGrid();
 	}
 
-	initializeGrid(width, height) {
+	initializeGrid() {
 		this.cells = [];
-		for (const x of Array(width).keys()) {
+		for (const x of Array(this.width).keys()) {
 			this.cells.push([]);
-			for (const y of Array(height).keys()) {
+			for (const y of Array(this.height).keys()) {
 				this.cells[x].push(new Cell(x, y).attachTo(this));
 			}
 		}
+		this.renderer.draw(this);
 	}
 
 	start() {
+		this.snake = new Snake(
+			this.getCell(Math.round(this.width / 2), Math.round(this.height / 2))
+		).attachGrid(this);
 		this.ticker = setInterval(() => this.tick.call(this), options.tickTime);
 		this.tick(); // Just to get started
 	}
 
 	stop() {
 		clearInterval(this.ticker);
-		alert(`You lose. Your snake was ${this.snake.size} big.`);
+	}
+
+	notify(message) {
+		alert(message);
+	}
+
+	reset() {
+		this.stop();
+		this.initializeGrid();
 	}
 
 	tick() {
