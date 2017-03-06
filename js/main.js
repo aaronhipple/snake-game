@@ -9,7 +9,18 @@ const options = {
 	foodMaxAge: 40,
 	tickTime: 250,
 	startingLength: 3,
+	flashTime: 150,
 };
 
 const game = new Grid(options.gridSize.width, options.gridSize.height, new HTMLRenderer('#snake-game'));
-game.start();
+
+var startButton = document.getElementById('start');
+var resetButton = document.getElementById('reset');
+// game.start();
+
+startButton.addEventListener('click', game.start);
+
+resetButton.addEventListener('click', function () {
+	game.reset();
+	game.start();
+});

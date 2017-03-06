@@ -48,6 +48,7 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 	checkGrid(cell) {
 		if (cell === null) {
 			this.grid.stop();
+			this.grid.renderer.flash('end');
 			this.grid.notify(`You lose. Your snake was ${this.size} big.`);
 		}
 	}
@@ -57,7 +58,10 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 		if (cell.child instanceof Food) {
 			cell.child.destroy();
 			this.size++;
+
+			this.grid.renderer.flash('food');
 		}
+
 	}
 
 	checkSnakes(cell) {
@@ -65,7 +69,9 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 		if (cell.getChild() instanceof Snake ||
 			cell.getChild() instanceof SnakeTail) {
 			this.grid.stop();
+			this.grid.renderer.flash('end');
 			this.grid.notify(`You lose. Your snake was ${this.size} big.`);
+
 		}
 	}
 

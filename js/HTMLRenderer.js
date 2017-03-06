@@ -1,3 +1,5 @@
+/* global options,  */
+
 class HTMLRenderer { // eslint-disable-line no-unused-vars
 	constructor(element) {
 		if (element instanceof Element) {
@@ -69,4 +71,14 @@ class HTMLRenderer { // eslint-disable-line no-unused-vars
 			cell.classList.add(marking.toLowerCase());
 		};
 	}
+
+	flash(type) {
+		var body = document.querySelector('body');
+		var className = 'flash-' + type;
+		body.classList.add(className);
+		setTimeout(function () {
+			body.classList.remove(className);
+		}, options.flashTime);
+	}
+
 }
