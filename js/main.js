@@ -9,6 +9,7 @@ const options = {
 	foodMaxAge: 40,
 	tickTime: 250,
 	startingLength: 3,
+	flashTime: 150,
 };
 
 const game = new Grid(options.gridSize.width, options.gridSize.height, new HTMLRenderer('#snake-game'));

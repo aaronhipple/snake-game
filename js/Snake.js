@@ -48,6 +48,7 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 	checkGrid(cell) {
 		if (cell === null) {
 			this.grid.stop();
+			this.grid.renderer.flash('end');
 			this.grid.notify(`You lose. Your snake was ${this.size} big.`);
 		}
 	}
@@ -58,13 +59,7 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 			cell.child.destroy();
 			this.size++;
 
-			var body = document.querySelector('body');
-
-			body.classList.add('flash');
-			setTimeout(function () {
-				body.classList.remove('flash');
-			},250);
-
+			this.grid.renderer.flash('food');
 		}
 
 	}
@@ -74,7 +69,9 @@ class Snake extends GridChild { // eslint-disable-line no-unused-vars
 		if (cell.getChild() instanceof Snake ||
 			cell.getChild() instanceof SnakeTail) {
 			this.grid.stop();
+			this.grid.renderer.flash('end');
 			this.grid.notify(`You lose. Your snake was ${this.size} big.`);
+
 		}
 	}
 
