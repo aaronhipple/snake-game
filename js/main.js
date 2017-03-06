@@ -18,6 +18,9 @@ var startButton = document.getElementById('start');
 var resetButton = document.getElementById('reset');
 // game.start();
 
-startButton.addEventListener('click', function () {
+startButton.addEventListener('click', game.start);
+
+resetButton.addEventListener('click', function () {
+	game.reset();
 	game.start();
 });

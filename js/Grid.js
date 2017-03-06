@@ -19,6 +19,7 @@ class Grid { // eslint-disable-line no-unused-vars
 	}
 
 	start() {
+		this.reset();
 		this.snake = new Snake(
 			this.getCell(Math.round(this.width / 2), Math.round(this.height / 2))
 		).attachGrid(this);
